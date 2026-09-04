@@ -1,5 +1,6 @@
 name: One-time strict typing cleanup
 
+# This follow-up commit activates the registered one-time workflow.
 on:
   push:
     branches: [epsilon-conditioned-pareto-learning]
