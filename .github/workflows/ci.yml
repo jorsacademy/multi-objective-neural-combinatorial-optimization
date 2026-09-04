@@ -72,8 +72,24 @@ jobs:
           )
           replace(
               "src/mopareto/pareto.py",
-              "            boundary = -intercept / slope\n",
-              "            boundary = Fraction(-intercept, slope)\n",
+              (
+                  "            boundary = -intercept / slope\n"
+                  "            if slope > 0:\n"
+                  "                lower = max(lower, boundary)\n"
+                  "            else:\n"
+                  "                upper = min(upper, boundary)\n"
+              ),
+              (
+                  "            boundary = Fraction(\n"
+                  "                -intercept.numerator * slope.denominator,\n"
+                  "                intercept.denominator * slope.numerator,\n"
+                  "            )\n"
+                  "            if slope > 0:\n"
+                  "                if boundary > lower:\n"
+                  "                    lower = boundary\n"
+                  "            elif boundary < upper:\n"
+                  "                upper = boundary\n"
+              ),
           )
           replace(
               "src/mopareto/models.py",
@@ -96,7 +112,7 @@ jobs:
           replace(
               "src/mopareto/training.py",
               "            loss.backward()\n",
-              "            loss.backward()  # type: ignore[no-untyped-call] -- PyTorch stub boundary.\n",
+              "            loss.backward()  # type: ignore[no-untyped-call]\n",
           )
           PY
           ruff format .
