@@ -46,22 +46,24 @@ jobs:
 
           replace(
               "src/mopareto/domain.py",
-              '''        numeric = (total_weight, objective_1, objective_2)
-          if not all(isinstance(value, int) and not isinstance(value, bool) for value in numeric):
-              raise ValueError("solution totals and objectives must be integers")
-          return cls(tuple(selection), int(total_weight), int(objective_1), int(objective_2))
-          ''',
-              '''        if (
-              not isinstance(total_weight, int)
-              or isinstance(total_weight, bool)
-              or not isinstance(objective_1, int)
-              or isinstance(objective_1, bool)
-              or not isinstance(objective_2, int)
-              or isinstance(objective_2, bool)
-          ):
-              raise ValueError("solution totals and objectives must be integers")
-          return cls(tuple(selection), total_weight, objective_1, objective_2)
-          ''',
+              (
+                  "        numeric = (total_weight, objective_1, objective_2)\n"
+                  "        if not all(isinstance(value, int) and not isinstance(value, bool) for value in numeric):\n"
+                  "            raise ValueError(\"solution totals and objectives must be integers\")\n"
+                  "        return cls(tuple(selection), int(total_weight), int(objective_1), int(objective_2))\n"
+              ),
+              (
+                  "        if (\n"
+                  "            not isinstance(total_weight, int)\n"
+                  "            or isinstance(total_weight, bool)\n"
+                  "            or not isinstance(objective_1, int)\n"
+                  "            or isinstance(objective_1, bool)\n"
+                  "            or not isinstance(objective_2, int)\n"
+                  "            or isinstance(objective_2, bool)\n"
+                  "        ):\n"
+                  "            raise ValueError(\"solution totals and objectives must be integers\")\n"
+                  "        return cls(tuple(selection), total_weight, objective_1, objective_2)\n"
+              ),
           )
           replace(
               "src/mopareto/pareto.py",
@@ -70,19 +72,21 @@ jobs:
           )
           replace(
               "src/mopareto/models.py",
-              '''    return model(
-              item_features(instance, device=model.device),
-              condition_features(model.mode, condition, device=model.device),
-          )
-          ''',
-              '''    return cast(
-              Tensor,
-              model(
-                  item_features(instance, device=model.device),
-                  condition_features(model.mode, condition, device=model.device),
+              (
+                  "    return model(\n"
+                  "        item_features(instance, device=model.device),\n"
+                  "        condition_features(model.mode, condition, device=model.device),\n"
+                  "    )\n"
               ),
-          )
-          ''',
+              (
+                  "    return cast(\n"
+                  "        Tensor,\n"
+                  "        model(\n"
+                  "            item_features(instance, device=model.device),\n"
+                  "            condition_features(model.mode, condition, device=model.device),\n"
+                  "        ),\n"
+                  "    )\n"
+              ),
           )
           replace(
               "src/mopareto/training.py",
