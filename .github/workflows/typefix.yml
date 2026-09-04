@@ -36,15 +36,23 @@ jobs:
           from pathlib import Path
 
 
-          def replace(path: str, old: str, new: str) -> None:
+          def ensure_replacement(
+              path: str,
+              old: str,
+              new: str,
+              *,
+              marker: str,
+          ) -> None:
               target = Path(path)
               text = target.read_text(encoding="utf-8")
+              if marker in text:
+                  return
               if old not in text:
                   raise RuntimeError(f"expected text not found in {path}: {old[:120]!r}")
-              target.write_text(text.replace(old, new), encoding="utf-8")
+              target.write_text(text.replace(old, new, 1), encoding="utf-8")
 
 
-          replace(
+          ensure_replacement(
               "src/mopareto/domain.py",
               (
                   "        numeric = (total_weight, objective_1, objective_2)\n"
@@ -64,8 +72,9 @@ jobs:
                   "            raise ValueError(\"solution totals and objectives must be integers\")\n"
                   "        return cls(tuple(selection), total_weight, objective_1, objective_2)\n"
               ),
+              marker="return cls(tuple(selection), total_weight, objective_1, objective_2)",
           )
-          replace(
+          ensure_replacement(
               "src/mopareto/pareto.py",
               (
                   "            boundary = -intercept / slope\n"
@@ -85,16 +94,12 @@ jobs:
                   "            elif boundary < upper:\n"
                   "                upper = boundary\n"
               ),
+              marker="-intercept.numerator * slope.denominator",
           )
-          replace(
+          ensure_replacement(
               "src/mopareto/pareto.py",
               (
-                  "        flags.append(\n"
-                  "            feasible\n"
-                  "            and upper >= 0\n"
-                  "            and lower <= 1\n"
-                  "            and max(lower, 0) <= min(upper, 1)\n"
-                  "        )\n"
+                  "        flags.append(feasible and upper >= 0 and lower <= 1 and max(lower, 0) <= min(upper, 1))\n"
               ),
               (
                   "        flags.append(\n"
@@ -103,8 +108,9 @@ jobs:
                   "            and lower <= Fraction(1, 1)\n"
                   "        )\n"
               ),
+              marker="upper >= Fraction(0, 1)",
           )
-          replace(
+          ensure_replacement(
               "src/mopareto/models.py",
               (
                   "    return model(\n"
@@ -121,11 +127,13 @@ jobs:
                   "        ),\n"
                   "    )\n"
               ),
+              marker="return cast(\n        Tensor,\n        model(",
           )
-          replace(
+          ensure_replacement(
               "src/mopareto/training.py",
               "            loss.backward()\n",
               "            loss.backward()  # type: ignore[no-untyped-call]\n",
+              marker="# type: ignore[no-untyped-call]",
           )
           PY
           ruff format .
