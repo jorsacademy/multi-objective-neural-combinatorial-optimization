@@ -1,6 +1,5 @@
 name: One-time strict typing cleanup
 
-# This follow-up commit activates the registered one-time workflow.
 on:
   push:
     branches: [epsilon-conditioned-pareto-learning]
@@ -31,7 +30,7 @@ jobs:
           python -m pip install --index-url https://download.pytorch.org/whl/cpu "torch>=2.2,<3"
           python -m pip install -e ".[dev]"
 
-      - name: Apply strict typing fixes
+      - name: Apply and verify strict typing fixes
         run: |
           python - <<'PY'
           from pathlib import Path
@@ -68,8 +67,42 @@ jobs:
           )
           replace(
               "src/mopareto/pareto.py",
-              "            boundary = -intercept / slope\n",
-              "            boundary = Fraction(-intercept, slope)\n",
+              (
+                  "            boundary = -intercept / slope\n"
+                  "            if slope > 0:\n"
+                  "                lower = max(lower, boundary)\n"
+                  "            else:\n"
+                  "                upper = min(upper, boundary)\n"
+              ),
+              (
+                  "            boundary = Fraction(\n"
+                  "                -intercept.numerator * slope.denominator,\n"
+                  "                intercept.denominator * slope.numerator,\n"
+                  "            )\n"
+                  "            if slope > 0:\n"
+                  "                if boundary > lower:\n"
+                  "                    lower = boundary\n"
+                  "            elif boundary < upper:\n"
+                  "                upper = boundary\n"
+              ),
+          )
+          replace(
+              "src/mopareto/pareto.py",
+              (
+                  "        flags.append(\n"
+                  "            feasible\n"
+                  "            and upper >= 0\n"
+                  "            and lower <= 1\n"
+                  "            and max(lower, 0) <= min(upper, 1)\n"
+                  "        )\n"
+              ),
+              (
+                  "        flags.append(\n"
+                  "            feasible\n"
+                  "            and upper >= Fraction(0, 1)\n"
+                  "            and lower <= Fraction(1, 1)\n"
+                  "        )\n"
+              ),
           )
           replace(
               "src/mopareto/models.py",
@@ -92,7 +125,7 @@ jobs:
           replace(
               "src/mopareto/training.py",
               "            loss.backward()\n",
-              "            loss.backward()  # type: ignore[no-untyped-call] -- PyTorch stub boundary.\n",
+              "            loss.backward()  # type: ignore[no-untyped-call]\n",
           )
           PY
           ruff format .
