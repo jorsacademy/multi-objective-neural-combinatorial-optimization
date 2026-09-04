@@ -29,7 +29,25 @@ jobs:
           python -m pip install "ruff==0.16.6"
           ruff check --fix . || true
           ruff format .
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path("src/mopareto/cli.py")
+          text = path.read_text(encoding="utf-8")
+          old = '        description="Verification-first neural approximation of exact bi-objective knapsack fronts.",\n'
+          new = (
+              "        description=(\n"
+              '            "Verification-first neural approximation of exact "\n'
+              '            "bi-objective knapsack fronts."\n'
+              "        ),\n"
+          )
+          if old not in text:
+              raise RuntimeError("expected CLI description was not found")
+          path.write_text(text.replace(old, new), encoding="utf-8")
+          PY
+          ruff format .
           ruff check .
+          ruff format --check .
 
       - name: Commit cleanup
         run: |
