@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+title: "Multi-Objective Neural Combinatorial Optimization"
+message: "If you use this research implementation, cite the repository and the underlying methods it references."
+type: software
+authors:
+  - name: jorsacademy
+version: 0.1.0
+date-released: 2026-09-04
+repository-code: "https://github.com/jorsacademy/multi-objective-neural-combinatorial-optimization"
+license: PolyForm-Noncommercial-1.0.0
+keywords:
+  - multi-objective optimization
+  - neural combinatorial optimization
+  - Pareto frontier
+  - bi-objective knapsack
+  - hypervolume
