@@ -1,0 +1,114 @@
+{
+  "schema_version": "mopareto-research-v1",
+  "training_count": 80,
+  "training_item_counts": [8, 10, 12, 14],
+  "training_regimes": ["independent", "aligned", "weakly_conflicting"],
+  "training_seed": 3100,
+  "validation_count": 24,
+  "validation_item_counts": [8, 10, 12, 14],
+  "validation_regimes": ["independent", "aligned", "weakly_conflicting"],
+  "validation_seed": 4100,
+  "capacity_ratio": 0.45,
+  "hidden_dim": 64,
+  "hidden_layers": 2,
+  "epochs": 30,
+  "batch_size": 16,
+  "learning_rate": 0.001,
+  "conditions_per_instance": 11,
+  "training_seed_offset": 5100,
+  "query_budget": 21,
+  "bootstrap_draws": 1000,
+  "bootstrap_seed": 6100,
+  "scenarios": [
+    {
+      "name": "interpolation",
+      "count": 20,
+      "item_count": 12,
+      "regime": "independent",
+      "capacity_ratio": 0.45,
+      "seed": 7100,
+      "value_scale": 100
+    },
+    {
+      "name": "size_18",
+      "count": 20,
+      "item_count": 18,
+      "regime": "independent",
+      "capacity_ratio": 0.45,
+      "seed": 8100,
+      "value_scale": 100
+    },
+    {
+      "name": "size_24",
+      "count": 20,
+      "item_count": 24,
+      "regime": "independent",
+      "capacity_ratio": 0.45,
+      "seed": 9100,
+      "value_scale": 100
+    },
+    {
+      "name": "tight_capacity",
+      "count": 20,
+      "item_count": 14,
+      "regime": "independent",
+      "capacity_ratio": 0.25,
+      "seed": 10100,
+      "value_scale": 100
+    },
+    {
+      "name": "loose_capacity",
+      "count": 20,
+      "item_count": 14,
+      "regime": "independent",
+      "capacity_ratio": 0.65,
+      "seed": 11100,
+      "value_scale": 100
+    },
+    {
+      "name": "strong_conflict",
+      "count": 20,
+      "item_count": 14,
+      "regime": "strongly_conflicting",
+      "capacity_ratio": 0.45,
+      "seed": 12100,
+      "value_scale": 100
+    },
+    {
+      "name": "aligned_objectives",
+      "count": 20,
+      "item_count": 14,
+      "regime": "aligned",
+      "capacity_ratio": 0.45,
+      "seed": 13100,
+      "value_scale": 100
+    },
+    {
+      "name": "heavy_tail",
+      "count": 20,
+      "item_count": 14,
+      "regime": "heavy_tail",
+      "capacity_ratio": 0.45,
+      "seed": 14100,
+      "value_scale": 100
+    },
+    {
+      "name": "clustered_tradeoffs",
+      "count": 20,
+      "item_count": 14,
+      "regime": "clustered",
+      "capacity_ratio": 0.45,
+      "seed": 15100,
+      "value_scale": 100
+    },
+    {
+      "name": "value_scale_shift",
+      "count": 20,
+      "item_count": 14,
+      "regime": "value_scale_shift",
+      "capacity_ratio": 0.45,
+      "seed": 16100,
+      "value_scale": 100
+    }
+  ]
+}
