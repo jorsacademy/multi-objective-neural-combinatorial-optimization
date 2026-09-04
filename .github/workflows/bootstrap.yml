@@ -24,16 +24,36 @@ jobs:
         run: |
           python - <<'PY'
           import base64
+          import hashlib
           import io
           import tarfile
           from pathlib import Path, PurePosixPath
 
+          expected = {
+              "part00.txt": "2e661c56c4aafea9d2763878752642e830f54da49f12519e7276d6d5e8618087",
+              "part01.txt": "cde85242c480eaddb58930c1596eded883338b1d65b78ef0e25ab4eea16fc988",
+              "part02.txt": "0fc2e5bd4074592b852e503d10b033bde6d0a46c29685fd5aa27248f8e6ddf02",
+              "part03.txt": "be2383628ebc8724e19a74bd5a491068a81e155d563b1277024f4b0dbf5a7681",
+              "part04.txt": "ae2bcbc9deee6215b4b4940c14e5cda1067cdcd4b14444e1db3fa3df7d205d0a",
+              "part05.txt": "32cf9328090b3e368bcdcc458faf04c9ade8b1770c3ba7b9490acc60a4bc25fa",
+              "part06.txt": "74fd278af1713553f3e27f773024bedf0408dc1af3247b29180135c3673a2398",
+              "part07.txt": "1e9b48e6477cc939794d72fe10a380f1561f885767277800bd6ac711003cd7ab",
+          }
           root = Path.cwd().resolve()
           parts = sorted((root / ".bootstrap").glob("part*.txt"))
           if not parts:
               raise RuntimeError("bootstrap archive parts are missing")
+          for part in parts:
+              actual = hashlib.sha256(part.read_bytes()).hexdigest()
+              print(f"{part.name}: {actual}")
+              if actual != expected.get(part.name):
+                  raise RuntimeError(f"bootstrap part checksum mismatch: {part.name}")
           encoded = "".join(part.read_text(encoding="ascii").strip() for part in parts)
+          if hashlib.sha256(encoded.encode("ascii")).hexdigest() != "cf393c8edde4fa3dc836b8d1a2387807f89fefe32cd02038cdda0f579d287c26":
+              raise RuntimeError("assembled bootstrap payload checksum mismatch")
           archive = base64.b64decode(encoded, validate=True)
+          if hashlib.sha256(archive).hexdigest() != "67f5a649f7bcedd64a48f2caef514d4265e5904702b7bd942286aa601a65559e":
+              raise RuntimeError("decoded bootstrap archive checksum mismatch")
           with tarfile.open(fileobj=io.BytesIO(archive), mode="r:gz") as handle:
               for member in handle.getmembers():
                   relative = PurePosixPath(member.name)
