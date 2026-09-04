@@ -142,10 +142,16 @@ class ParetoSolution:
         total_weight = payload.get("total_weight")
         objective_1 = payload.get("objective_1")
         objective_2 = payload.get("objective_2")
-        numeric = (total_weight, objective_1, objective_2)
-        if not all(isinstance(value, int) and not isinstance(value, bool) for value in numeric):
+        if (
+            not isinstance(total_weight, int)
+            or isinstance(total_weight, bool)
+            or not isinstance(objective_1, int)
+            or isinstance(objective_1, bool)
+            or not isinstance(objective_2, int)
+            or isinstance(objective_2, bool)
+        ):
             raise ValueError("solution totals and objectives must be integers")
-        return cls(tuple(selection), int(total_weight), int(objective_1), int(objective_2))
+        return cls(tuple(selection), total_weight, objective_1, objective_2)
 
 
 @dataclass(frozen=True, slots=True)

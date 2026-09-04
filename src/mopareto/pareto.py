@@ -97,15 +97,19 @@ def supported_solution_flags(frontier: ParetoFrontier) -> tuple[bool, ...]:
                     feasible = False
                     break
                 continue
-            boundary = -intercept / slope
+            boundary = Fraction(
+                -intercept.numerator * slope.denominator,
+                intercept.denominator * slope.numerator,
+            )
             if slope > 0:
-                lower = max(lower, boundary)
-            else:
-                upper = min(upper, boundary)
+                if boundary > lower:
+                    lower = boundary
+            elif boundary < upper:
+                upper = boundary
             if lower > upper:
                 feasible = False
                 break
-        flags.append(feasible and upper >= 0 and lower <= 1 and max(lower, 0) <= min(upper, 1))
+        flags.append(feasible and upper >= Fraction(0, 1) and lower <= Fraction(1, 1))
     return tuple(flags)
 
 

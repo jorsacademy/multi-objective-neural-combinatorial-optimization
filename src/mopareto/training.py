@@ -283,7 +283,7 @@ def train_policy(
                 for index in batch_indices
             ]
             loss = torch.stack(losses).mean()
-            loss.backward()
+            loss.backward()  # type: ignore[no-untyped-call]
             if not _gradients_are_finite(model):
                 raise RuntimeError("training produced non-finite gradients")
             torch.nn.utils.clip_grad_norm_(model.parameters(), config.gradient_clip_norm)

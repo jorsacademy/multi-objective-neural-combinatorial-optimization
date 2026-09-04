@@ -141,9 +141,12 @@ def policy_logits(
     instance: MultiObjectiveKnapsackInstance,
     condition: float,
 ) -> Tensor:
-    return model(
-        item_features(instance, device=model.device),
-        condition_features(model.mode, condition, device=model.device),
+    return cast(
+        Tensor,
+        model(
+            item_features(instance, device=model.device),
+            condition_features(model.mode, condition, device=model.device),
+        ),
     )
 
 
