@@ -1,0 +1,59 @@
+name: One-time repository bootstrap
+
+on:
+  push:
+    branches: [epsilon-conditioned-pareto-learning]
+
+permissions:
+  contents: write
+
+jobs:
+  bootstrap:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: epsilon-conditioned-pareto-learning
+          fetch-depth: 0
+
+      - name: Materialize repository tree
+        shell: bash
+        run: |
+          python - <<'PY'
+          import base64
+          import io
+          import tarfile
+          from pathlib import Path, PurePosixPath
+
+          root = Path.cwd().resolve()
+          parts = sorted((root / ".bootstrap").glob("part*.txt"))
+          if not parts:
+              raise RuntimeError("bootstrap archive parts are missing")
+          encoded = "".join(part.read_text(encoding="ascii").strip() for part in parts)
+          archive = base64.b64decode(encoded, validate=True)
+          with tarfile.open(fileobj=io.BytesIO(archive), mode="r:gz") as handle:
+              for member in handle.getmembers():
+                  relative = PurePosixPath(member.name)
+                  if relative.is_absolute() or ".." in relative.parts:
+                      raise RuntimeError(f"unsafe archive path: {member.name!r}")
+                  if member.issym() or member.islnk():
+                      raise RuntimeError(f"archive links are not allowed: {member.name!r}")
+              handle.extractall(root)
+          PY
+          rm -rf .bootstrap
+
+      - name: Commit implementation
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No implementation changes to commit."
+            exit 0
+          fi
+          git commit -m "Build exact conditional Pareto-set benchmark"
+          git push origin HEAD:epsilon-conditioned-pareto-learning
