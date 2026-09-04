@@ -26,9 +26,8 @@ def weighted_sum_solution(frontier: ParetoFrontier, weight_1: float) -> ParetoSo
 
     scored: list[tuple[Fraction, ParetoSolution]] = []
     for solution in frontier.solutions:
-        score = (
-            preference * Fraction(solution.objective_1, ideal_1)
-            + weight_2 * Fraction(solution.objective_2, ideal_2)
+        score = preference * Fraction(solution.objective_1, ideal_1) + weight_2 * Fraction(
+            solution.objective_2, ideal_2
         )
         scored.append((score, solution))
     best_score = max(score for score, _ in scored)
@@ -40,10 +39,7 @@ def weighted_sum_solution(frontier: ParetoFrontier, weight_1: float) -> ParetoSo
                 Fraction(solution.objective_1, ideal_1),
                 Fraction(solution.objective_2, ideal_2),
             ),
-            -(
-                Fraction(solution.objective_1, ideal_1)
-                + Fraction(solution.objective_2, ideal_2)
-            ),
+            -(Fraction(solution.objective_1, ideal_1) + Fraction(solution.objective_2, ideal_2)),
             solution.total_weight,
             solution.selection,
         ),

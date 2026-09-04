@@ -217,7 +217,9 @@ def _research(args: argparse.Namespace) -> int:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="mopareto",
-        description="Verification-first neural approximation of exact bi-objective knapsack fronts.",
+        description=(
+            "Verification-first neural approximation of exact bi-objective knapsack fronts."
+        ),
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
 

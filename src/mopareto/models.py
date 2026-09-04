@@ -167,10 +167,7 @@ def save_checkpoint(
     output.parent.mkdir(parents=True, exist_ok=True)
     header = _checkpoint_header(model)
     header["metadata"] = json.dumps(metadata or {}, sort_keys=True)
-    tensors = {
-        key: value.detach().cpu().contiguous()
-        for key, value in model.state_dict().items()
-    }
+    tensors = {key: value.detach().cpu().contiguous() for key, value in model.state_dict().items()}
     save_file(tensors, str(output), metadata=header)
 
 

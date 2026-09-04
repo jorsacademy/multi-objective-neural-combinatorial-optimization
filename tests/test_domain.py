@@ -25,7 +25,9 @@ def test_exact_dynamic_programming_matches_exhaustive_enumeration() -> None:
             assert dynamic == brute
 
 
-def test_dynamic_programming_trace_and_audits(simple_instance: MultiObjectiveKnapsackInstance) -> None:
+def test_dynamic_programming_trace_and_audits(
+    simple_instance: MultiObjectiveKnapsackInstance,
+) -> None:
     result = solve_pareto_dynamic_programming(simple_instance, return_trace=True)
     assert isinstance(result, tuple)
     frontier, trace = result
@@ -52,10 +54,13 @@ def test_nondominated_filter_canonicalizes_duplicate_objectives() -> None:
         ParetoSolution((1, 1, 0), 7, 6, 9),
     )
     filtered = nondominated_solutions(candidates)
-    assert filtered == (
-        ParetoSolution((0, 1, 0), 4, 10, 4),
-        ParetoSolution((1, 1, 0), 7, 6, 9),
-    )[::-1]
+    assert (
+        filtered
+        == (
+            ParetoSolution((0, 1, 0), 4, 10, 4),
+            ParetoSolution((1, 1, 0), 7, 6, 9),
+        )[::-1]
+    )
     assert filtered[0].objectives == (6, 9)
     assert filtered[1].objectives == (10, 4)
 
@@ -71,7 +76,9 @@ def test_solution_from_selection_accepts_numpy_integers(
         solution_from_selection(simple_instance, [1, 0, 2, 0])
 
 
-def test_invalid_selection_audit_fails_closed(simple_instance: MultiObjectiveKnapsackInstance) -> None:
+def test_invalid_selection_audit_fails_closed(
+    simple_instance: MultiObjectiveKnapsackInstance,
+) -> None:
     audit = audit_solution(simple_instance, [1, 0])
     assert not audit.binary
     assert not audit.feasible

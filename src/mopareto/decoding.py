@@ -176,7 +176,8 @@ def _model_orders(
         sorted(
             range(instance.item_count),
             key=lambda index: (
-                1.0 / (1.0 + math.exp(-max(-40.0, min(40.0, float(scores[index])))))
+                1.0
+                / (1.0 + math.exp(-max(-40.0, min(40.0, float(scores[index])))))
                 / instance.weights[index],
                 float(scores[index]),
                 utility_density[index],
@@ -287,8 +288,7 @@ def _best_decoded_candidate(
         if positive is not None:
             candidates.append(_greedy_from_order(instance, order, allowed=positive))
     improved = [
-        _single_swap_improvement(instance, candidate, criterion)
-        for candidate in candidates
+        _single_swap_improvement(instance, candidate, criterion) for candidate in candidates
     ]
     incumbent = improved[0]
     for candidate in improved[1:]:

@@ -55,7 +55,9 @@ def test_feature_validation(simple_instance: MultiObjectiveKnapsackInstance) -> 
         model(torch.zeros(2, 7), torch.zeros(3))
 
 
-def test_checkpoint_round_trip(tmp_path: Path, simple_instance: MultiObjectiveKnapsackInstance) -> None:
+def test_checkpoint_round_trip(
+    tmp_path: Path, simple_instance: MultiObjectiveKnapsackInstance
+) -> None:
     torch.manual_seed(4)
     model = ConditionalParetoPolicy(
         "epsilon_constraint",

@@ -143,7 +143,9 @@ def _audit_approximation(
             advice.candidate.selection,
             reported_objectives=advice.candidate.objectives,
         )
-        valid.append(float(audit.binary and audit.feasible and audit.reported_objectives_consistent))
+        valid.append(
+            float(audit.binary and audit.feasible and audit.reported_objectives_consistent)
+        )
     if tuple(approximation.frontier) != nondominated_solutions(approximation.frontier):
         raise RuntimeError("reported approximation frontier is not canonical and nondominated")
     return float(np.mean(np.asarray(valid, dtype=float)))
@@ -231,9 +233,7 @@ def _summary_row(
         mean_runtime_seconds=float(
             np.mean(np.asarray([row.runtime_seconds for row in rows], dtype=float))
         ),
-        mean_hypervolume_gain_vs_weighted_density=float(
-            np.mean(np.asarray(gains, dtype=float))
-        ),
+        mean_hypervolume_gain_vs_weighted_density=float(np.mean(np.asarray(gains, dtype=float))),
         hypervolume_gain_ci_low=ci_low,
         hypervolume_gain_ci_high=ci_high,
     )
@@ -298,9 +298,7 @@ def evaluate_models(
         for method, approximation in approximations.items():
             method_rows[method].append(_instance_metrics(dataset, index, approximation))
 
-    baseline_hypervolumes = [
-        row.hypervolume_ratio for row in method_rows["weighted_sum_density"]
-    ]
+    baseline_hypervolumes = [row.hypervolume_ratio for row in method_rows["weighted_sum_density"]]
     frontier_rows = tuple(
         _summary_row(
             scenario=scenario,
@@ -319,8 +317,7 @@ def evaluate_models(
         for frontier in dataset.frontiers
     ]
     unsupported_instances = sum(
-        int(not all(supported_solution_flags(frontier)))
-        for frontier in dataset.frontiers
+        int(not all(supported_solution_flags(frontier))) for frontier in dataset.frontiers
     )
     oracle = OracleFrontierMetrics(
         scenario=scenario,

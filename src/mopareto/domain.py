@@ -375,9 +375,11 @@ def solution_from_selection(
         raise ValueError("selection length does not match item count")
     normalized: list[int] = []
     for chosen in selection:
-        if isinstance(chosen, bool):
-            normalized.append(int(chosen))
-        elif isinstance(chosen, (int, np.integer)) and int(chosen) in {0, 1}:
+        if (
+            isinstance(chosen, bool)
+            or isinstance(chosen, (int, np.integer))
+            and int(chosen) in {0, 1}
+        ):
             normalized.append(int(chosen))
         else:
             raise ValueError("selection entries must be binary")
@@ -401,9 +403,7 @@ def solve_pareto_dynamic_programming(
     """Enumerate the exact Pareto frontier with capacity-indexed dominance pruning."""
 
     zero = _PartialSolution((), 0, 0, 0)
-    frontiers: list[tuple[_PartialSolution, ...]] = [
-        (zero,) for _ in range(instance.capacity + 1)
-    ]
+    frontiers: list[tuple[_PartialSolution, ...]] = [(zero,) for _ in range(instance.capacity + 1)]
     sizes = np.ones((instance.item_count + 1, instance.capacity + 1), dtype=np.int64)
 
     for item_index, (weight, profit_1, profit_2) in enumerate(
